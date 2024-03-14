@@ -223,6 +223,7 @@ def FindMovie(request):
     serializer = MovieSerializer(instance=movies, many=True)
     return Response(data=serializer.data)
 
+
 # create new reservation
 @api_view(http_method_names=["POST"])
 def NewReservation(request):
@@ -243,12 +244,4 @@ def NewReservation(request):
     reservation.save()
 
     return Response(data=request.data, status=status.HTTP_201_CREATED)
-
-
-
-
-
-
-
-
 
