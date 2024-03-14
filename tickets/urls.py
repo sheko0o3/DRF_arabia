@@ -1,5 +1,13 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
+
+# viewset
+router = DefaultRouter()
+router.register(prefix="guests", viewset=views.viewsets_guest)
+router.register(prefix="movies", viewset=views.viewsets_movie)
+router.register(prefix="reservations", viewset=views.viewsets_reservation)
+
 
 urlpatterns = [
     # 1:
@@ -19,13 +27,22 @@ urlpatterns = [
 
     path("restcbv/<int:pk>", views.CBV_pk.as_view()),
 
-    # 5 mixins
+    # 5 mixins CBV
     path("mixins/", views.mixins_list.as_view()),
 
     path("mixins/<int:pk>", views.mixins_pk.as_view()),
 
-    # 6 generics
+    # 6 generics CBV
     path("generics/", views.generics_list.as_view()),
     path("generics/<int:pk>", views.generics_pk.as_view()),
+
+    # 7: viewsets
+    path("viewsets/", include(router.urls)),
+
+    # ---------------------------- #
+    # FBV
+    path("findmovie/", views.FindMovie),
+
+    path("newreserve/", views.NewReservation)
 
 ]

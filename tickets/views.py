@@ -7,17 +7,16 @@ from .serializers import GuestSerializer, MovieSerializer, ReservationSerializer
 from rest_framework.response import Response
 from rest_framework import status, filters
 
-# FBV
+# FBView
 from rest_framework.decorators import api_view
 
-# CBV
+# CBView
 from rest_framework.views import APIView
 from django.http import Http404
 
-# mixins views
-from rest_framework import generics, mixins
-
-
+# mixins, viewsets, generics  Views
+from rest_framework import generics, mixins, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
 
@@ -193,6 +192,57 @@ class generics_pk(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GuestSerializer
 
 
+# 7 ViewSets
+class viewsets_guest(viewsets.ModelViewSet):
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["name"]
+
+
+class viewsets_movie(viewsets.ModelViewSet):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["movie"]
+
+
+class viewsets_reservation(viewsets.ModelViewSet):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+
+# ------------------------------------------------------------ #
+
+
+# Find movie FBV
+@api_view(http_method_names=["GET"])
+def FindMovie(request):
+    movies = Movie.objects.filter(
+        movie=request.data["movie"]
+    )
+    serializer = MovieSerializer(instance=movies, many=True)
+    return Response(data=serializer.data)
+
+# create new reservation
+@api_view(http_method_names=["POST"])
+def NewReservation(request):
+
+    movie = Movie.objects.get(
+        movie=request.data["movie"],
+        hall=request.data["hall"]
+    )
+
+    guest = Guest()
+    guest.name = request.data["name"]
+    guest.mobile = request.data["mobile"]
+    guest.save()
+
+    reservation = Reservation()
+    reservation.guest = guest
+    reservation.movie = movie
+    reservation.save()
+
+    return Response(data=request.data, status=status.HTTP_201_CREATED)
 
 
 
