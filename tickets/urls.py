@@ -23,9 +23,9 @@ urlpatterns = [
     path("restfbv/<int:pk>", views.FBV_pk),
 
     # 4.1: GET POST from rest_framework CBV APIView (inheritance)
-    path("restcbv/", views.CBV_List.as_view()),
+    path("restcbvAPIView/", views.CBV_List.as_view()),
 
-    path("restcbv/<int:pk>", views.CBV_pk.as_view()),
+    path("restcbvAPIView/<int:pk>", views.CBV_pk.as_view()),
 
     # 5 mixins CBV
     path("mixins/", views.mixins_list.as_view()),

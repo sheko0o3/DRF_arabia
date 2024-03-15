@@ -13,6 +13,7 @@ from rest_framework.decorators import api_view
 # CBView
 from rest_framework.views import APIView
 from django.http import Http404
+from rest_framework import exceptions
 
 # mixins, viewsets, generics  Views
 from rest_framework import generics, mixins, viewsets
