@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http.response import JsonResponse
 
-from .models import Guest, Reservation, Movie
-from .serializers import GuestSerializer, MovieSerializer, ReservationSerializer
+from .models import Guest, Reservation, Movie, Post
+from .serializers import GuestSerializer, MovieSerializer, ReservationSerializer, PostSerializer
 
 from rest_framework.response import Response
 from rest_framework import status, filters
@@ -18,6 +18,12 @@ from rest_framework import exceptions
 # mixins, viewsets, generics  Views
 from rest_framework import generics, mixins, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
+
+# Authentication for View
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+from .permissions import IsAuthorOrReadOnly
 
 # Create your views here.
 
@@ -185,27 +191,32 @@ class mixins_pk(mixins.RetrieveModelMixin,
 class generics_list(generics.ListCreateAPIView):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
+    # authentication_classes = [BasicAuthentication]
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
 
 
 # 6.2 GET, PUT, DELETE
 class generics_pk(generics.RetrieveUpdateDestroyAPIView):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
 
 
 # 7 ViewSets
 class viewsets_guest(viewsets.ModelViewSet):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["name"]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["name"]
 
 
 class viewsets_movie(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["movie"]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["movie"]
 
 
 class viewsets_reservation(viewsets.ModelViewSet):
@@ -246,3 +257,9 @@ def NewReservation(request):
 
     return Response(data=request.data, status=status.HTTP_201_CREATED)
 
+
+# POST author editor
+class Post_pk(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthorOrReadOnly]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer

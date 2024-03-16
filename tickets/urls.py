@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+from rest_framework.authtoken.views import obtain_auth_token
 
 # viewset
 router = DefaultRouter()
@@ -43,6 +44,16 @@ urlpatterns = [
     # FBV
     path("findmovie/", views.FindMovie),
 
-    path("newreserve/", views.NewReservation)
+    path("newreserve/", views.NewReservation),
+
+    # 10 rest auth url --> LogOut from rest_framework web
+    path("api-auth/", include("rest_framework.urls")),
+
+    # 11 Token authentication
+    path("api-token-auth/", obtain_auth_token),
+
+    # Permission test
+
+    path("postgenerics/<int:pk>", views.Post_pk.as_view()),
 
 ]
